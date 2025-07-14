@@ -1,0 +1,15 @@
+# Web scraping dependencies
+selenium==4.9.1
+webdriver-manager==3.8.6
+
+# Data processing
+pandas==2.0.1
+pyarrow==12.0.0  # Required for parquet files
+
+# AWS SDK
+boto3==1.28.0
+botocore==1.31.0
+
+# Utilities
+requests==2.31.0
+python-dotenv==1.0.0
