@@ -9,6 +9,7 @@ build/
 develop-eggs/
 dist/
 downloads/
+drivers/
 eggs/
 .eggs/
 lib/

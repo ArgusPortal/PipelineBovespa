@@ -4,6 +4,8 @@ import subprocess
 import glob
 import sys
 import platform
+import shutil
+import datetime
 
 def check_dependencies():
     """
@@ -133,27 +135,41 @@ def download_file_colab_fixed():
     """
     is_windows = platform.system() == 'Windows'
     
-    # Definir caminho de download apropriado para o sistema operacional
-    if is_windows:
-        download_path = os.path.join(os.path.expanduser("~"), "Downloads", "b3_data")
-    else:
-        download_path = "/content/raw_data"
+    # Define base project directory - always use project path
+    project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     
-    os.makedirs(download_path, exist_ok=True)
-    print(f"📂 Using download directory: {download_path}")
+    # Always use data/raw within the project directory
+    base_download_path = os.path.join(project_dir, "data", "raw")
     
-    # Configurar opções do Chrome
+    # Create base download directory if it doesn't exist
+    os.makedirs(base_download_path, exist_ok=True)
+    print(f"📂 Using base download directory: {base_download_path}")
+    
+    # Initial download will go to this temporary location
+    temp_download_path = os.path.join(base_download_path, "temp")
+    os.makedirs(temp_download_path, exist_ok=True)
+    
+    # Configure Chrome options
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
     
-    # Definir preferências de download
+    # Suppress Chrome logging messages
+    chrome_options.add_argument("--log-level=3")  # Only show fatal errors
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    if os.name == 'nt':  # Windows
+        # Redirect browser process stdout and stderr to null
+        chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        os.environ['WDM_LOG_LEVEL'] = '0'  # Silence webdriver-manager logs
+    
+    # Set download preferences to temporary location
     prefs = {
-        "download.default_directory": download_path,
+        "download.default_directory": temp_download_path,
         "download.prompt_for_download": False,
-        "download.directory_upgrade": True
+        "download.directory_upgrade": True,
+        "safebrowsing.enabled": True
     }
     chrome_options.add_experimental_option("prefs", prefs)
     
@@ -167,7 +183,7 @@ def download_file_colab_fixed():
     try:
         if is_windows and chrome_version:
             print("🔄 Downloading ChromeDriver for Windows")
-            chromedriver_path = download_chromedriver(chrome_version, download_path)
+            chromedriver_path = download_chromedriver(chrome_version, temp_download_path)
             
             if chromedriver_path:
                 service = Service(executable_path=chromedriver_path)
@@ -254,7 +270,7 @@ def download_file_colab_fixed():
         )
         
         # List existing files before download
-        existing_files = set(glob.glob(os.path.join(download_path, "*")))
+        existing_files = set(glob.glob(os.path.join(temp_download_path, "*")))
         print(f"📂 Existing files: {len(existing_files)} files")
         
         # Click download link
@@ -272,7 +288,7 @@ def download_file_colab_fixed():
         stable_count = 0
         
         while time.time() - start_time < max_wait:
-            current_files = set(glob.glob(os.path.join(download_path, "*")))
+            current_files = set(glob.glob(os.path.join(temp_download_path, "*")))
             new_files = current_files - existing_files
             
             # Check partial downloads
@@ -323,7 +339,7 @@ def download_file_colab_fixed():
             time.sleep(2)
         else:
             # Final check after timeout
-            current_files = set(glob.glob(os.path.join(download_path, "*")))
+            current_files = set(glob.glob(os.path.join(temp_download_path, "*")))
             new_files = current_files - existing_files
             completed_files = [f for f in new_files if not f.endswith('.crdownload')]
             
@@ -337,14 +353,50 @@ def download_file_colab_fixed():
             else:
                 raise Exception(f"Download timeout after {max_wait} seconds - No file downloaded")
         
+        # Extract date from the filename (format: IBOVDia_DD-MM-YY)
+        file_basename = os.path.basename(downloaded_file)
+        
+        # Handle different possible date formats in filenames
+        try:
+            if "_" in file_basename:
+                # Try to extract date from IBOVDia_28-07-25 format
+                date_part = file_basename.split("_")[1].split(".")[0]
+                
+                # Convert from DD-MM-YY to YYYY-MM-DD format
+                day, month, short_year = date_part.split("-")
+                year = f"20{short_year}"  # Assuming 20XX for the year
+                iso_date = f"{year}-{month}-{day}"
+            else:
+                # If no date in filename, use today's date
+                today = datetime.datetime.now()
+                iso_date = today.strftime("%Y-%m-%d")
+                
+            print(f"📅 Extracted date: {iso_date}")
+        except Exception as e:
+            print(f"⚠️ Could not extract date from filename: {e}")
+            # Fallback to today's date
+            today = datetime.datetime.now()
+            iso_date = today.strftime("%Y-%m-%d")
+            
+        # Create date directory structure
+        date_directory = os.path.join(base_download_path, f"date={iso_date}")
+        os.makedirs(date_directory, exist_ok=True)
+        print(f"📁 Created date directory: {date_directory}")
+        
+        # Move the file to the date directory
+        final_csv_path = os.path.join(date_directory, file_basename)
+        shutil.move(downloaded_file, final_csv_path)
+        print(f"📦 Moved CSV to: {final_csv_path}")
+            
         # --- Convert to Parquet ---
         print("\n🧪 Starting Parquet conversion...")
-        parquet_path = downloaded_file.replace('.csv', '.parquet')
+        parquet_filename = os.path.basename(final_csv_path).replace('.csv', '.parquet')
+        parquet_path = os.path.join(date_directory, parquet_filename)
         
         try:
-            print(f"📄 Trying to read file: {downloaded_file}")
+            print(f"📄 Trying to read file: {final_csv_path}")
             df = pd.read_csv(
-                downloaded_file, 
+                final_csv_path, 
                 sep=';', 
                 encoding='latin-1', 
                 decimal=',',
@@ -357,24 +409,24 @@ def download_file_colab_fixed():
                 
             print(f"📊 CSV loaded successfully: {df.shape[0]} rows, {df.shape[1]} columns")
             
-            # Save as Parquet
+            # Save as Parquet in date directory
             df.to_parquet(parquet_path)
             print(f"💾 Parquet file saved: {parquet_path}")
             
             # Size comparison
-            csv_size = os.path.getsize(downloaded_file) / 1024 / 1024
+            csv_size = os.path.getsize(final_csv_path) / 1024 / 1024
             parquet_size = os.path.getsize(parquet_path) / 1024 / 1024
             print(f"📦 Size comparison: CSV={csv_size:.2f} MB → Parquet={parquet_size:.2f} MB")
             
-            return downloaded_file, parquet_path
+            return final_csv_path, parquet_path
             
         except Exception as e:
             print(f"❌ Conversion failed: {str(e)}")
-            return downloaded_file, None
+            return final_csv_path, None
 
     except Exception as e:
         print(f"❌ Error occurred: {str(e)}")
-        screenshot_path = os.path.join(download_path, "error_screenshot.png")
+        screenshot_path = os.path.join(temp_download_path, "error_screenshot.png")
         driver.save_screenshot(screenshot_path)
         print(f"📸 Screenshot saved as '{screenshot_path}'")
         return None, None
@@ -382,6 +434,84 @@ def download_file_colab_fixed():
         if driver:
             driver.quit()
             print(f"🚪 WebDriver closed at {time.strftime('%H:%M:%S')}")
+
+def wait_for_download_completion(download_dir, existing_files, max_wait=300):
+    """Waits for file download to complete and returns the downloaded file path"""
+    start_time = time.time()
+    downloaded_file = None
+    last_size = 0
+    stable_count = 0
+    
+    while time.time() - start_time < max_wait:
+        # Get current files and identify new ones
+        current_files = set(glob.glob(os.path.join(download_dir, "*")))
+        new_files = current_files - existing_files
+        
+        # Check for partial and completed downloads
+        partial_files = [f for f in new_files if f.endswith('.crdownload') or f.endswith('.tmp')]
+        completed_files = [f for f in new_files if not (f.endswith('.crdownload') or f.endswith('.tmp'))]
+        
+        # If there are completed files, check size stability
+        if completed_files:
+            # Prioritize IBOVDia.csv if exists
+            ibov_files = [f for f in completed_files if "IBOVDia" in f]
+            if ibov_files:
+                candidate = ibov_files[0]
+            else:
+                candidate = completed_files[0]
+            
+            current_size = os.path.getsize(candidate)
+            
+            # Check if size is stable
+            if current_size > 0:
+                if current_size == last_size:
+                    stable_count += 1
+                    print(f"📊 File size stable: {current_size} bytes ({stable_count}/3)")
+                else:
+                    stable_count = 0
+                    print(f"📈 File growing: {current_size} bytes")
+                
+                last_size = current_size
+                
+                # Consider download complete if size stable for 3 checks
+                if stable_count >= 3:
+                    downloaded_file = candidate
+                    print(f"✅ Download complete! Final size: {current_size} bytes")
+                    break
+            else:
+                print(f"⚠️ File found but empty: {candidate}")
+        
+        if partial_files:
+            partial_file = partial_files[0]
+            try:
+                size = os.path.getsize(partial_file)
+                print(f"⏱️ Partial download: {size} bytes")
+            except:
+                print("⏱️ Partial download in progress")
+        
+        elif not new_files:
+            elapsed = int(time.time() - start_time)
+            print(f"🕒 Waiting for download to start... ({elapsed}s)")
+        
+        time.sleep(2)
+    else:
+        # Final check after timeout
+        current_files = set(glob.glob(os.path.join(download_dir, "*")))
+        new_files = current_files - existing_files
+        completed_files = [f for f in new_files if not f.endswith('.crdownload')]
+        
+        if completed_files:
+            candidate = completed_files[0]
+            if os.path.getsize(candidate) > 0:
+                downloaded_file = candidate
+                print(f"✅ File downloaded after timeout: {candidate}")
+            else:
+                raise Exception(f"Downloaded file is empty: {candidate}")
+        else:
+            raise Exception(f"Download timeout after {max_wait} seconds - No file downloaded")
+    
+    # Return the downloaded file path
+    return downloaded_file
 
 
 if __name__ == "__main__":

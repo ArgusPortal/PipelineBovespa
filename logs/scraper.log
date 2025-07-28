@@ -1,0 +1,120 @@
+2025-07-13 22:08:45,616 - INFO - Diretório criado: C:\Users\argus\workspace\PipelineBovespa\data\raw\date=2025-07-13
+2025-07-13 22:08:45,617 - INFO - Diretório criado: C:\Users\argus\workspace\PipelineBovespa\data\refined\date=2025-07-13
+2025-07-13 22:08:45,618 - INFO - Diretório de download: C:\Users\argus\workspace\PipelineBovespa\data\raw
+2025-07-13 22:08:45,658 - INFO - Sistema operacional detectado: Windows
+2025-07-13 22:08:45,659 - INFO - Windows detectado, usando instalação padrão do Chrome
+2025-07-13 22:08:45,659 - INFO - Configurando ChromeDriver...
+2025-07-13 22:08:45,659 - INFO - ====== WebDriver manager ======
+2025-07-13 22:08:46,457 - INFO - There is no [win32] chromedriver "latest" for browser google-chrome "138.0.7204" in cache
+2025-07-13 22:08:46,458 - INFO - Get LATEST chromedriver version for google-chrome
+2025-07-13 22:08:46,834 - ERROR - Falha na inicialização do WebDriver: There is no such driver by url https://chromedriver.storage.googleapis.com/LATEST_RELEASE_138.0.7204
+2025-07-13 22:08:46,834 - ERROR - Path do projeto: C:\Users\argus\workspace\PipelineBovespa
+2025-07-13 22:08:46,837 - ERROR - Conteúdo da pasta drivers (se existir): ['C:\\Users\\argus\\workspace\\PipelineBovespa\\drivers\\chromedriver.exe', 'C:\\Users\\argus\\workspace\\PipelineBovespa\\drivers\\LICENSE.chromedriver', 'C:\\Users\\argus\\workspace\\PipelineBovespa\\drivers\\THIRD_PARTY_NOTICES.chromedriver']
+2025-07-13 22:08:46,839 - INFO - 
+Processo falhou
+2025-07-13 22:11:33,295 - INFO - Diretório de download: C:\Users\argus\workspace\PipelineBovespa\data\raw
+2025-07-13 22:11:33,337 - INFO - Sistema operacional detectado: Windows
+2025-07-13 22:11:33,338 - INFO - Windows detectado, usando instalação padrão do Chrome
+2025-07-13 22:11:33,338 - INFO - Configurando ChromeDriver...
+2025-07-13 22:11:33,338 - INFO - Tentando usar chromedriver local primeiro...
+2025-07-13 22:11:33,338 - INFO - Procurando chromedriver em: C:\Users\argus\workspace\PipelineBovespa\drivers
+2025-07-13 22:11:33,339 - INFO - ChromeDriver encontrado em: C:\Users\argus\workspace\PipelineBovespa\drivers\chromedriver.exe
+2025-07-13 22:11:36,918 - WARNING - Falha ao usar chromedriver local: Message: session not created: This version of ChromeDriver only supports Chrome version 114
+Current browser version is 138.0.7204.101 with binary path C:\Program Files\Google\Chrome\Application\chrome.exe
+Stacktrace:
+Backtrace:
+	GetHandleVerifier [0x00BCA813+48355]
+	(No symbol) [0x00B5C4B1]
+	(No symbol) [0x00A65358]
+	(No symbol) [0x00A861AC]
+	(No symbol) [0x00A81EF3]
+	(No symbol) [0x00A80579]
+	(No symbol) [0x00AB0C55]
+	(No symbol) [0x00AB093C]
+	(No symbol) [0x00AAA536]
+	(No symbol) [0x00A882DC]
+	(No symbol) [0x00A893DD]
+	GetHandleVerifier [0x00E2AABD+2539405]
+	GetHandleVerifier [0x00E6A78F+2800735]
+	GetHandleVerifier [0x00E6456C+2775612]
+	GetHandleVerifier [0x00C551E0+616112]
+	(No symbol) [0x00B65F8C]
+	(No symbol) [0x00B62328]
+	(No symbol) [0x00B6240B]
+	(No symbol) [0x00B54FF7]
+	BaseThreadInitThunk [0x756E5D49+25]
+	RtlInitializeExceptionChain [0x775ED1AB+107]
+	RtlGetAppContainerNamedObjectPath [0x775ED131+561]
+
+2025-07-13 22:11:36,919 - INFO - Tentando configurar com webdriver_manager...
+2025-07-13 22:11:36,920 - INFO - Versão do Chrome detectada: 138.0.7204.101
+2025-07-13 22:11:36,920 - INFO - Chrome 138+ detectado, tentando versão específica
+2025-07-13 22:11:36,921 - INFO - ====== WebDriver manager ======
+2025-07-13 22:11:37,695 - INFO - There is no [win32] chromedriver "latest" for browser google-chrome "138.0.7204" in cache
+2025-07-13 22:11:37,696 - INFO - Get LATEST chromedriver version for google-chrome
+2025-07-13 22:11:37,967 - WARNING - Falha no ChromeDriverManager: There is no such driver by url https://chromedriver.storage.googleapis.com/LATEST_RELEASE_138.0.7204
+2025-07-13 22:11:37,968 - INFO - ====== WebDriver manager ======
+2025-07-13 22:11:38,837 - INFO - There is no [win32] chromedriver "114.0.5735.90" for browser google-chrome "138.0.7204" in cache
+2025-07-13 22:11:38,837 - INFO - About to download new driver from https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_win32.zip
+2025-07-13 22:11:40,195 - INFO - Driver has been saved in cache [C:\Users\argus\.wdm\drivers\chromedriver\win32\114.0.5735.90]
+2025-07-13 22:11:47,372 - WARNING - Falha na tentativa de versão específica: Message: session not created: This version of ChromeDriver only supports Chrome version 114
+Current browser version is 138.0.7204.101 with binary path C:\Program Files\Google\Chrome\Application\chrome.exe
+Stacktrace:
+Backtrace:
+	GetHandleVerifier [0x00EEA813+48355]
+	(No symbol) [0x00E7C4B1]
+	(No symbol) [0x00D85358]
+	(No symbol) [0x00DA61AC]
+	(No symbol) [0x00DA1EF3]
+	(No symbol) [0x00DA0579]
+	(No symbol) [0x00DD0C55]
+	(No symbol) [0x00DD093C]
+	(No symbol) [0x00DCA536]
+	(No symbol) [0x00DA82DC]
+	(No symbol) [0x00DA93DD]
+	GetHandleVerifier [0x0114AABD+2539405]
+	GetHandleVerifier [0x0118A78F+2800735]
+	GetHandleVerifier [0x0118456C+2775612]
+	GetHandleVerifier [0x00F751E0+616112]
+	(No symbol) [0x00E85F8C]
+	(No symbol) [0x00E82328]
+	(No symbol) [0x00E8240B]
+	(No symbol) [0x00E74FF7]
+	BaseThreadInitThunk [0x756E5D49+25]
+	RtlInitializeExceptionChain [0x775ED1AB+107]
+	RtlGetAppContainerNamedObjectPath [0x775ED131+561]
+
+2025-07-13 22:11:47,375 - INFO - Tentando usar chromedriver local como último recurso...
+2025-07-13 22:11:47,377 - INFO - Último recurso: ChromeDriver encontrado em: C:\Users\argus\workspace\PipelineBovespa\drivers\chromedriver.exe
+2025-07-13 22:11:54,440 - ERROR - Todas as tentativas de inicialização do WebDriver falharam: Message: session not created: This version of ChromeDriver only supports Chrome version 114
+Current browser version is 138.0.7204.101 with binary path C:\Program Files\Google\Chrome\Application\chrome.exe
+Stacktrace:
+Backtrace:
+	GetHandleVerifier [0x00BCA813+48355]
+	(No symbol) [0x00B5C4B1]
+	(No symbol) [0x00A65358]
+	(No symbol) [0x00A861AC]
+	(No symbol) [0x00A81EF3]
+	(No symbol) [0x00A80579]
+	(No symbol) [0x00AB0C55]
+	(No symbol) [0x00AB093C]
+	(No symbol) [0x00AAA536]
+	(No symbol) [0x00A882DC]
+	(No symbol) [0x00A893DD]
+	GetHandleVerifier [0x00E2AABD+2539405]
+	GetHandleVerifier [0x00E6A78F+2800735]
+	GetHandleVerifier [0x00E6456C+2775612]
+	GetHandleVerifier [0x00C551E0+616112]
+	(No symbol) [0x00B65F8C]
+	(No symbol) [0x00B62328]
+	(No symbol) [0x00B6240B]
+	(No symbol) [0x00B54FF7]
+	BaseThreadInitThunk [0x756E5D49+25]
+	RtlInitializeExceptionChain [0x775ED1AB+107]
+	RtlGetAppContainerNamedObjectPath [0x775ED131+561]
+
+2025-07-13 22:11:54,442 - ERROR - Não foi possível inicializar o WebDriver por nenhum método
+2025-07-13 22:11:54,442 - ERROR - Path do projeto: C:\Users\argus\workspace\PipelineBovespa
+2025-07-13 22:11:54,443 - ERROR - Conteúdo da pasta drivers (se existir): ['C:\\Users\\argus\\workspace\\PipelineBovespa\\drivers\\chromedriver.exe', 'C:\\Users\\argus\\workspace\\PipelineBovespa\\drivers\\chromedriver_temp.zip', 'C:\\Users\\argus\\workspace\\PipelineBovespa\\drivers\\LICENSE.chromedriver', 'C:\\Users\\argus\\workspace\\PipelineBovespa\\drivers\\THIRD_PARTY_NOTICES.chromedriver']
+2025-07-13 22:11:58,549 - INFO - 
+Processo falhou
