@@ -45,3 +45,7 @@ data/
 # OS specific
 .DS_Store
 Thumbs.db
+
+# Explicitly ignore chromedriver files
+chromedriver.exe
+chromedriver
